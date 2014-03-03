@@ -1,5 +1,16 @@
 # Missed Connections Novel Project
 
+### Before using:
+
+Make sure you have the following Python libraries installed:
+
+* feedparser
+* threading
+* sqlite3
+
+Threading and Sqlite3 should come with Python 2.7.6.  Instructions for installing Feedparser are [here](https://pypi.python.org/pypi/feedparser), or install via Pip on the command line.
+
+
 ### To scrape the data:
 
 Navigate to the folder and run the following first in Terminal:
