@@ -4,20 +4,20 @@ import threading
 
 #this function loads all the URLs for different cities and categories we'll use. 
 def loadCityAndCat():
-    #get a feed url and listing 
-    conn = sqlite3.connect('sampleDB.db')
-    c = conn.cursor()
-    conn.text_factory = str
-    c.execute('SELECT * FROM lastURLS')
-    result = c.fetchall()
-    for item in result:
-    
-    	print "getting feeds from " + item[0] + " in category " + item[3]		
-        #collect info from feeds
-        getLastURL(item[1], item[2], item[0], item[3], item[4])
-    
-    #call getText again to keep the program going
-    getText()
+	#get a feed url and listing 
+	conn = sqlite3.connect('sampleDB.db')
+	c = conn.cursor()
+	conn.text_factory = str
+	c.execute('SELECT * FROM lastURLS')
+	result = c.fetchall()
+	for item in result:
+
+		print "getting feeds from " + item[0] + " in category " + item[3]		
+		#collect info from feeds
+		getLastURL(item[1], item[2], item[0], item[3], item[4])
+
+	#call getText again to keep the program going
+	getText()
 
 
 def getLastURL(theFeed, theURL, theCity, theCategory, theTitle):
@@ -42,40 +42,47 @@ def getLastURL(theFeed, theURL, theCity, theCategory, theTitle):
 #fills in the db with initial info		
 def getFirstListings(feed, theCity, theCategory, theFeed):
 
-    conn = sqlite3.connect('sampleDB.db')
-    c = conn.cursor()
-    conn.text_factory = str
-    #we need to add the unique ID for each new listing. get the lastID and updated it by 1 
-    c.execute('SELECT value FROM lastID WHERE id=0')
-    row = c.fetchone()
-    saveID = row[0]
-    for listing in feed.entries:
-        saveTitle = listing.title
-        saveDate = listing.date
-        saveDescription = listing.description
-        saveLink = listing.link
-        #increment saveID
-        saveID+=1
-        #make an array for the db input
-        toSave=(saveID,theCity, saveDate, theCategory, saveTitle, saveDescription, saveLink)
-        #connect and insert the row to the database
-        c.execute('INSERT INTO listings VALUES (?,?,?,?,?,?,?)', toSave)
-        conn.commit()
-        
-    #insert the last ID into database
-    c.execute("UPDATE lastID SET value=? WHERE id=?", (saveID, 0))
-    conn.commit()
-    
-    firstLink = feed.entries[0].link
-    firstTitle = feed.entries[0].title.replace('"', '').replace("'", "")
-    
-    c.execute('UPDATE lastURLS SET url="'+firstLink+'" WHERE feed="'+theFeed+'"')
-    c.execute('UPDATE lastURLS SET title="'+firstTitle+'" WHERE feed="'+theFeed+'"')
-    conn.commit()
-    conn.close()
-    
-    print "SAVED FIRST PASS"
-    print firstTitle
+	conn = sqlite3.connect('sampleDB.db')
+	c = conn.cursor()
+	conn.text_factory = str
+	#we need to add the unique ID for each new listing. get the lastID and updated it by 1 
+	c.execute('SELECT value FROM lastID WHERE id=0')
+	row = c.fetchone()
+	saveID = row[0]
+
+	if len(feed.entries) > 0:
+		for listing in feed.entries:
+			saveTitle = listing.title
+			saveDate = listing.date
+			saveDescription = listing.description
+			saveLink = listing.link
+			#increment saveID
+			saveID+=1
+			#make an array for the db input
+			toSave=(saveID,theCity, saveDate, theCategory, saveTitle, saveDescription, saveLink)
+			#connect and insert the row to the database
+			c.execute('INSERT INTO listings VALUES (?,?,?,?,?,?,?)', toSave)
+			conn.commit()
+
+		#insert the last ID into database
+		c.execute("UPDATE lastID SET value=? WHERE id=?", (saveID, 0))
+		conn.commit()
+
+		firstLink = feed.entries[0].link
+		firstTitle = feed.entries[0].title.replace('"', '').replace("'", "")
+
+		c.execute('UPDATE lastURLS SET url="'+firstLink+'" WHERE feed="'+theFeed+'"')
+		c.execute('UPDATE lastURLS SET title="'+firstTitle+'" WHERE feed="'+theFeed+'"')
+		conn.commit()
+		conn.close()
+
+		print "SAVED FIRST PASS"
+		print firstTitle
+
+	else:
+
+		print "RSS feed empty :("
+
 
     
 #updates the latest URL to check against
@@ -86,7 +93,7 @@ def updateLastURL(feed, theFeed):
 	conn = sqlite3.connect('sampleDB.db')
 	c = conn.cursor()
 	conn.text_factory = str
-		
+			
 	#add value of the first element in the feed to the lastURLS database
 	latestURL = feed.entries[0].link
 	latestTitle = feed.entries[0].title.replace('"', '').replace("'", "")
@@ -109,7 +116,7 @@ def updateListings(theCity, theFeed, lastURL, theCategory, theTitle):
 	#make sure the call was successful
 	if (d.feed.has_key('title')):
 		d['feed']['title']
-		
+
 		for listing in d.entries:
 			conn = sqlite3.connect('sampleDB.db')
 			c = conn.cursor()
