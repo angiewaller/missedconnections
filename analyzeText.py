@@ -13,6 +13,7 @@ def splitSentences():
 	for item in result:
 
 		copy = item[5]
+		city = item[1]
 		copy = copy.strip()
 		copy = copy.replace('\n', '').replace('[...]', '').replace("'", "\'")
 		sentences = copy.split('.')
@@ -22,20 +23,20 @@ def splitSentences():
 				sentences.remove(sentence)
 
 			if len(sentence) > 0:
-				result = sortPhrases(sentence)
+				results = sortPhrases(sentence)
 
-				if len(result) > 0:
-					print result
+				if len(results) > 0:
+					for result in results:
+						#add new sentences to a database for the type of sentence, keeping city and category attached
+						addEntry(sentence, city, result)
+						print result + ": " + sentence + ", " + city
 
-					# if result[0] == "intro":
-					# 	print sentence
-
-		#print sentences
 
 def sortPhrases(sentence):
 
 	tags = []
 
+	#eventually turn these into YAML dictionaries or the like
 	intro = ["You were", "I was", "I pulled up", "I swear", "I know", "I saw", "You saw"]
 	interaction = ["nodded", "shared", "called", "talk", "talking", "we met", "locked eyes", "stared", "looked", "looking for", "smiled"]
 	description = ["looked like", "saw", "were reading", "was reading", "ogle", "ogled", "ogling", "got in"]
@@ -66,6 +67,20 @@ def sortPhrases(sentence):
 			break
 
 	return tags
+
+
+def addEntry(sentence, city, category):
+
+	db = sqlite3.connect('novelsDB.db')
+	cur = db.cursor()
+	db.text_factory(str)
+
+	toAdd = (city, sentence, category)
+	cur.execute('INSERT INTO sentences VALUES (?, ?, ?)', toAdd)
+
+	db.commit()
+	db.close()
+
 
 
 splitSentences()
