@@ -1,11 +1,8 @@
-#initializes the database for the scrapes.
-#this code should only be run once!
-
 import sqlite3
 
 conn = sqlite3.connect('sampleDB.db')
-myCities=["newyork","chicago","losangeles"] #fill in with as many cities as you want
-myCategories = ["w4m","m4m", "m4w", "w4w"] #all 4 categories
+myCities=["newyork","chicago","losangeles","delaware"]
+myCategories = ["w4m","m4m", "m4w", "w4w"]
 
 #myCities=["newyork"]
 #myCategories = ["m4m"]

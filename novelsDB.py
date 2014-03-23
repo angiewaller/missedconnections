@@ -1,3 +1,5 @@
+#run this once to create a database for the sentences to be used in the novels
+
 import sqlite3
 
 conn = sqlite3.connect('novelsDB.db')

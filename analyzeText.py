@@ -12,8 +12,11 @@ def splitSentences():
 
 	for item in result:
 
+		#pulling copy and city from the database
 		copy = item[5]
 		city = item[1]
+
+		#replacing unusable characters and splitting the copy into sentences
 		copy = copy.strip()
 		copy = copy.replace('\n', '').replace('[...]', '').replace("'", "\'")
 		sentences = copy.split('.')
@@ -22,6 +25,7 @@ def splitSentences():
 			if sentence == '':
 				sentences.remove(sentence)
 
+			#if there is actually something there, run the sortPhrases function to add tags for the type of sentence this is
 			if len(sentence) > 0:
 				results = sortPhrases(sentence)
 
@@ -42,6 +46,7 @@ def sortPhrases(sentence):
 	description = ["looked like", "saw", "were reading", "was reading", "ogle", "ogled", "ogling", "got in"]
 	afterthought = ["I believe", "I feel", "felt like", "think about", "I think", "I thought", "forgot", "wanted", "didn't want"]
 
+	#for all the categories: if there's a match found, add a tag to the sentence
 	for phrase in intro:
 		key = re.match(phrase, sentence)
 		if key != None:
@@ -69,6 +74,7 @@ def sortPhrases(sentence):
 	return tags
 
 
+#adding entries to the database
 def addEntry(sentence, city, category):
 
 	db = sqlite3.connect('novelsDB.db')
