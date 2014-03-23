@@ -28,4 +28,5 @@ Keep this running for however long you want.  It will scrape all new listings fr
 To stop the code, press Ctrl+c in the terminal window and the code will terminate after it has finished its current scrape.
 
 
+Project for [Angie Waller](http://angiewaller.com/)
 Scraping code completed with [Zannah Marsh](http://zannahbot.com/).
