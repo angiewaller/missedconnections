@@ -93,10 +93,17 @@ def updateLastURL(feed, theFeed):
 	conn = sqlite3.connect('sampleDB.db')
 	c = conn.cursor()
 	conn.text_factory = str
-			
-	#add value of the first element in the feed to the lastURLS database
-	latestURL = feed.entries[0].link
-	latestTitle = feed.entries[0].title.replace('"', '').replace("'", "")
+
+	if len(feed.entries) > 0:
+				
+		#add value of the first element in the feed to the lastURLS database
+		latestURL = feed.entries[0].link
+		latestTitle = feed.entries[0].title.replace('"', '').replace("'", "")
+
+	else:
+
+		latestURL = "nothing"
+		latestTitle = ""
 	
 	newInfo.append(latestURL)
 	newInfo.append(latestTitle)
