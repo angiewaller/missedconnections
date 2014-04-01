@@ -2,9 +2,14 @@ from sys import argv
 import sqlite3
 from random import randrange
 import datetime
+import os
 
-#create an optional argument for a city-specific novel
-script, city = argv
+#create optional argument for a city-specific novel
+if len(argv) > 1:
+	script, city = argv
+
+else:
+	city = "all"
 
 #blank lists for types of sentences
 intros = []
@@ -25,7 +30,10 @@ def printNovel():
 
 	#generates a unique file name with the city and the date/time
 	pubdate = datetime.datetime.now()
-	filename = city + "-" + pubdate.strftime("%B%d%y-%I%M%p") + ".txt"
+	filename = "novels/" + city + "-" + pubdate.strftime("%B%d%y-%I%M%p") + ".txt"
+	dir = os.path.dirname(filename)
+	if not os.path.exists(dir):
+		os.makedirs(dir)
 
 	#pick a first sentence at random from the list, append it to the novel lis
 	firstSentence = selectSentence(intros)
@@ -91,12 +99,18 @@ conn = sqlite3.connect('novelsDB.db')
 c = conn.cursor()
 conn.text_factory(str)
 
-# if len(sys.argv) > 1:
+if city == "all":
 
-#select all db entries where the city matches the city argument
-c.execute('SELECT * from sentences where city=:theCity', 
-	{"theCity": city})
-results = c.fetchall()
+	#select from all the db entries, doesn't matter what city
+	c.execute('SELECT * from sentences')
+	results = c.fetchall()
+
+else:
+
+	#select all db entries where the city matches the city argument
+	c.execute('SELECT * from sentences where city=:theCity', 
+		{"theCity": city})
+	results = c.fetchall()
 
 #adding cities to lists by category of sentence
 for result in results:

@@ -19,7 +19,7 @@ def splitSentences():
 
 		#replacing unusable characters and splitting the copy into sentences
 		copy = copy.strip()
-		copy = copy.replace('\n', '').replace('[...]', '').replace("'", "\'")
+		copy = copy.replace('\n', '').replace('[...]', '').replace("'", "\'").replace('/', '').replace('<3', '').replace(':)', '')
 		sentences = copy.split('.')
 
 		for sentence in sentences:
