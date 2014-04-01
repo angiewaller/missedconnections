@@ -10,6 +10,7 @@ script, city = argv
 intros = []
 descriptions = []
 interactions = []
+more = []
 afterthoughts = []
 
 #initialize blank list, this is where we are storing the novel
@@ -50,11 +51,16 @@ def printNovel():
 			novel.append(interactions[nextSentence])
 
 		if currentSentence == 2:
-			nextSentence = selectSentence(afterthoughts)
+			nextSentence = selectSentence(more)
 			currentSentence = 3
-			novel.append(afterthoughts[nextSentence])
+			novel.append(more[nextSentence])
 
 		if currentSentence == 3:
+			nextSentence = selectSentence(afterthoughts)
+			currentSentence = 4
+			novel.append(afterthoughts[nextSentence])
+
+		if currentSentence == 4:
 			nextSentence = selectSentence(descriptions)
 			currentSentence = 1
 			novel.append(descriptions[nextSentence])
@@ -95,8 +101,8 @@ results = c.fetchall()
 #adding cities to lists by category of sentence
 for result in results:
 
-	category = result[2]
-	sentence = result[1]
+	category = result[3]
+	sentence = result[2]
 
 	if category == "intro":
 		intros.append(sentence)
@@ -106,6 +112,8 @@ for result in results:
 		interactions.append(sentence)
 	elif category == "afterthought":
 		afterthoughts.append(sentence)
+	elif category == "more":
+		more.append(sentence)
 
 #call printNovel to print result
 printNovel()

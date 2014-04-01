@@ -12,9 +12,10 @@ def splitSentences():
 
 	for item in result:
 
-		#pulling copy and city from the database
-		copy = item[5]
+		#pulling info about the post from the database
+		id = item[0]
 		city = item[1]
+		copy = item[5]
 
 		#replacing unusable characters and splitting the copy into sentences
 		copy = copy.strip()
@@ -32,8 +33,17 @@ def splitSentences():
 				if len(results) > 0:
 					for result in results:
 						#add new sentences to a database for the type of sentence, keeping city and category attached
-						addEntry(sentence, city, result)
-						print result + ": " + sentence + ", " + city
+						addEntry(id, sentence, city, result)
+
+	conn.close()
+
+	db = sqlite3.connect('novelsDB.db')
+	cur = db.cursor()
+	db.text_factory = str
+	cur.execute('SELECT * FROM sentences ORDER BY id DESC LIMIT 1')
+	lastEntry = cur.fetchall()[0]
+
+	print "Analysis complete.  Last sentence analyzed: " + str(lastEntry[0]) + ", " + lastEntry[2]
 
 
 def sortPhrases(sentence):
@@ -44,6 +54,7 @@ def sortPhrases(sentence):
 	intro = ["You were", "I was", "I pulled up", "I swear", "I know", "I saw", "You saw"]
 	interaction = ["nodded", "shared", "called", "talk", "talking", "we met", "locked eyes", "stared", "looked", "looking for", "smiled"]
 	description = ["looked like", "saw", "were reading", "was reading", "ogle", "ogled", "ogling", "got in"]
+	more = ["commented", "you bought", "turned", "was there", "shared", "exchanged", "told you", "told me", "you're not", "got there", "thinking"]
 	afterthought = ["I believe", "I feel", "felt like", "think about", "I think", "I thought", "forgot", "wanted", "didn't want"]
 
 	#for all the categories: if there's a match found, add a tag to the sentence
@@ -71,20 +82,34 @@ def sortPhrases(sentence):
 			tags.append("afterthought")
 			break
 
+	for phrase in more:
+		key = re.search(phrase, sentence)
+		if key != None:
+			tags.append("more")
+			break
+
 	return tags
 
 
 #adding entries to the database
-def addEntry(sentence, city, category):
+def addEntry(id, sentence, city, category):
 
 	db = sqlite3.connect('novelsDB.db')
 	cur = db.cursor()
 	db.text_factory(str)
 
-	toAdd = (city, sentence, category)
-	cur.execute('INSERT INTO sentences VALUES (?, ?, ?)', toAdd)
+	cur.execute('SELECT max(id) FROM sentences')
+	result = cur.fetchone()
+	lastID = result[0]
+	# print lastID
 
-	db.commit()
+	if id > lastID:
+
+		toAdd = (id, city, sentence, category)
+		cur.execute('INSERT INTO sentences VALUES (?, ?, ?, ?)', toAdd)
+
+		db.commit()
+
 	db.close()
 
 
