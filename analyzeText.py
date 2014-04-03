@@ -96,7 +96,7 @@ def addEntry(id, sentence, city, category):
 
 	db = sqlite3.connect('novelsDB.db')
 	cur = db.cursor()
-	db.text_factory(str)
+	db.text_factory = str
 
 	cur.execute('SELECT max(id) FROM sentences')
 	result = cur.fetchone()

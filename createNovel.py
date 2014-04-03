@@ -97,7 +97,7 @@ def printNovel():
 #connect to the database
 conn = sqlite3.connect('novelsDB.db')
 c = conn.cursor()
-conn.text_factory(str)
+conn.text_factory = str
 
 if city == "all":
 
