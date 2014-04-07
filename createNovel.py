@@ -75,7 +75,6 @@ def printNovel():
 					novel.append(newcopy)
 					ids.append(newid)
 					currentSentence = 1
-				break
 
 			#if id is not the same, OK to add to novel
 			else:
@@ -135,41 +134,17 @@ def printNovel():
 
 
 		if currentSentence == 3:
-			nextSentence = selectSentence(more)
-			newcopy = more[nextSentence][0]
-			newid = more[nextSentence][1]
+			nextSentence = selectSentence(afterthoughts)
+			newcopy = afterthoughts[nextSentence][0]
+			newid = afterthoughts[nextSentence][1]
 			id_set = set(ids)
 			novels_set = set(novel)
 
 			if nextSentence in id_set:
-				print "found a duplicate.  checking..."
+				print "Found a duplicate.  checking..."
 				if newcopy in novels_set:
-					print "Found a 'more action' match! Trying again."
+					print "Found an afterthoughts match! Trying again."
 					currentSentence = 3		
-				else:
-					novel.append(newcopy)
-					ids.append(newid)
-					currentSentence = 4
-
-			else:
-				novel.append(newcopy)
-				ids.append(newid)
-				currentSentence = 4
-			print currentSentence
-
-
-		if currentSentence == 4:
-			nextSentence = selectSentence(more)
-			newcopy = more[nextSentence][0]
-			newid = more[nextSentence][1]
-			id_set = set(ids)
-			novels_set = set(novel)
-
-			if nextSentence in id_set:
-				print "found a duplicate.  checking..."
-				if newcopy in novels_set:
-					print "Found a 'more action' match! Trying again."
-					currentSentence = 4		
 				else:
 					novel.append(newcopy)
 					ids.append(newid)
