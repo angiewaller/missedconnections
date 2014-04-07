@@ -1,4 +1,5 @@
 from sys import argv
+import re
 import sqlite3
 from random import randrange
 import datetime
@@ -20,6 +21,7 @@ afterthoughts = []
 
 #initialize blank list, this is where we are storing the novel
 novel = []
+ids = []
 
 def selectSentence(type):
 
@@ -37,9 +39,11 @@ def printNovel():
 
 	#pick a first sentence at random from the list, append it to the novel lis
 	firstSentence = selectSentence(intros)
-	novel.append(intros[firstSentence])
+	novel.append(intros[firstSentence][0])
+	print intros[firstSentence][0]
+	ids.append(intros[firstSentence][1])
 	currentSentence = 0
-	count = len(intros[firstSentence])
+	count = len(intros[firstSentence][0])
 
 	#while the total character count is less than 5000...
 	while count < 5000:
@@ -50,35 +54,139 @@ def printNovel():
 		if currentSentence == 0:
 
 			nextSentence = selectSentence(descriptions)
-			currentSentence = 1
-			novel.append(descriptions[nextSentence])
+			newcopy = descriptions[nextSentence][0]
+			newid = descriptions[nextSentence][1]
+
+			#create a set out of all the ids & novels in the lists so far
+			id_set = set(ids)
+			novels_set = set(novel)
+
+			#checking for duplicates, first against the id
+			if nextSentence in id_set:
+				print "Found a duplicate.  checking..."
+
+				#if an id dupe found, check against the sentences in the novel.  if found, keep currentSentence the same and try again
+				if newcopy in novels_set:
+					print "Found a description match! Trying again."
+					currentSentence = 0	
+
+				#if sentence is not the same, OK to add to novel		
+				else:
+					novel.append(newcopy)
+					ids.append(newid)
+					currentSentence = 1
+				break
+
+			#if id is not the same, OK to add to novel
+			else:
+				novel.append(newcopy)
+				ids.append(newid)
+				currentSentence = 1
+			print currentSentence
+
 
 		if currentSentence == 1:
+
 			nextSentence = selectSentence(interactions)
-			currentSentence = 2
-			novel.append(interactions[nextSentence])
+			newcopy = interactions[nextSentence][0]
+			newid = interactions[nextSentence][1]
+			id_set = set(ids)
+			novels_set = set(novel)
+
+			if nextSentence in id_set:
+				print "found a duplicate.  checking..."
+				if newcopy in novels_set:
+					print "Found an interaction match! Trying again."
+					currentSentence = 1			
+				else:
+					novel.append(newcopy)
+					ids.append(newid)
+					currentSentence = 2
+
+			else:
+				novel.append(newcopy)
+				ids.append(newid)
+				currentSentence = 2
+			print currentSentence
+
 
 		if currentSentence == 2:
 			nextSentence = selectSentence(more)
-			currentSentence = 3
-			novel.append(more[nextSentence])
+			newcopy = more[nextSentence][0]
+			newid = more[nextSentence][1]
+			id_set = set(ids)
+			novels_set = set(novel)
+
+			if nextSentence in id_set:
+				print "found a duplicate.  checking..."
+				if newcopy in novels_set:
+					print "Found a 'more action' match! Trying again."
+					currentSentence = 2			
+				else:
+					novel.append(newcopy)
+					ids.append(newid)
+					currentSentence = 3
+
+			else:
+				novel.append(newcopy)
+				ids.append(newid)
+				currentSentence = 3
+			print currentSentence
+
 
 		if currentSentence == 3:
-			nextSentence = selectSentence(afterthoughts)
-			currentSentence = 4
-			novel.append(afterthoughts[nextSentence])
+			nextSentence = selectSentence(more)
+			newcopy = more[nextSentence][0]
+			newid = more[nextSentence][1]
+			id_set = set(ids)
+			novels_set = set(novel)
+
+			if nextSentence in id_set:
+				print "found a duplicate.  checking..."
+				if newcopy in novels_set:
+					print "Found a 'more action' match! Trying again."
+					currentSentence = 3		
+				else:
+					novel.append(newcopy)
+					ids.append(newid)
+					currentSentence = 4
+
+			else:
+				novel.append(newcopy)
+				ids.append(newid)
+				currentSentence = 4
+			print currentSentence
+
 
 		if currentSentence == 4:
-			nextSentence = selectSentence(descriptions)
-			currentSentence = 1
-			novel.append(descriptions[nextSentence])
+			nextSentence = selectSentence(more)
+			newcopy = more[nextSentence][0]
+			newid = more[nextSentence][1]
+			id_set = set(ids)
+			novels_set = set(novel)
+
+			if nextSentence in id_set:
+				print "found a duplicate.  checking..."
+				if newcopy in novels_set:
+					print "Found a 'more action' match! Trying again."
+					currentSentence = 4		
+				else:
+					novel.append(newcopy)
+					ids.append(newid)
+					currentSentence = 1
+
+			else:
+				novel.append(newcopy)
+				ids.append(newid)
+				currentSentence = 1
+			print currentSentence
 
 		#adding the length of the last sentence to the total character count, determines whether the loop runs again
-		count += len(descriptions[nextSentence])
+		count += len(novel[-1])
 
 	#put a final afterthought sentence to end the novel
 	nextSentence = selectSentence(afterthoughts)
-	novel.append(afterthoughts[nextSentence])
+	novel.append(afterthoughts[nextSentence][0])
 
 	#writing to a text file
 	file = open(filename, "w")
@@ -89,8 +197,8 @@ def printNovel():
 
 	file.close()
 
-	print count
-	print "Novel is generated at " + filename
+	print "Novel is generated at " + filename + ", count of " + str(count) + " characters"
+	print ids
 
 
 
@@ -117,17 +225,18 @@ for result in results:
 
 	category = result[3]
 	sentence = result[2]
+	id = result[0]
 
 	if category == "intro":
-		intros.append(sentence)
+		intros.append([sentence, id])
 	elif category == "description":
-		descriptions.append(sentence)
+		descriptions.append([sentence, id])
 	elif category == "interaction":
-		interactions.append(sentence)
+		interactions.append([sentence, id])
 	elif category == "afterthought":
-		afterthoughts.append(sentence)
+		afterthoughts.append([sentence, id])
 	elif category == "more":
-		more.append(sentence)
+		more.append([sentence, id])
 
 #call printNovel to print result
 printNovel()
