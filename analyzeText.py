@@ -2,6 +2,8 @@ import nltk
 import sqlite3
 import re
 
+categories = ["intro", "description", "interaction", "more", "afterthought"]
+
 def splitSentences():
 
 	conn = sqlite3.connect('sampleDB.db')
@@ -50,43 +52,29 @@ def sortPhrases(sentence):
 
 	tags = []
 
-	#eventually turn these into YAML dictionaries or the like
-	intro = ["You were", "I was", "I pulled up", "I swear", "I know", "I saw", "You saw"]
-	interaction = ["nodded", "shared", "called", "talk", "talking", "we met", "locked eyes", "stared", "looked", "looking for", "smiled"]
-	description = ["looked like", "saw", "were reading", "was reading", "ogle", "ogled", "ogling", "got in"]
-	more = ["commented", "you bought", "turned", "was there", "shared", "exchanged", "told you", "told me", "you're not", "got there", "thinking"]
-	afterthought = ["I believe", "I feel", "felt like", "think about", "I think", "I thought", "forgot", "wanted", "didn't want"]
+	for category in categories:
+		filename = category + ".txt"
+		file = open('dictionaries/' + filename, 'r')
+		phrases = file.read()
+		phrases = phrases.split('\n')
 
-	#for all the categories: if there's a match found, add a tag to the sentence
-	for phrase in intro:
-		key = re.match(phrase, sentence)
-		if key != None:
-			tags.append("intro")
-			break
+		for phrase in phrases:
 
-	for phrase in interaction:
-		key = re.search(phrase, sentence)
-		if key != None:
-			tags.append("interaction")
-			break
+			if category == "intro":
 
-	for phrase in description:
-		key = re.search(phrase, sentence)
-		if key != None:
-			tags.append("description")
-			break
+				key = re.match(phrase, sentence)
+				if key != None:
+					tags.append(category)
+					break
 
-	for phrase in afterthought:
-		key = re.search(phrase, sentence)
-		if key != None:
-			tags.append("afterthought")
-			break
+			else:
 
-	for phrase in more:
-		key = re.search(phrase, sentence)
-		if key != None:
-			tags.append("more")
-			break
+				key = re.search(phrase, sentence)
+				if key != None:
+					tags.append(category)
+					break
+
+		file.close()
 
 	return tags
 
