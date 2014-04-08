@@ -47,6 +47,7 @@ def printNovel():
 
 	#while the total character count is less than 5000...
 	while count < 5000:
+		#print ids
 
 		#picking new sentence type based on last sentence type
 		#intro sentence is only used at the beginning.  the other types cycle through.
@@ -62,8 +63,8 @@ def printNovel():
 			novels_set = set(novel)
 
 			#checking for duplicates, first against the id
-			if nextSentence in id_set:
-				print "Found a duplicate.  checking..."
+			if newid in id_set:
+				print "Found a duplicate.  Checking..."
 
 				#if an id dupe found, check against the sentences in the novel.  if found, keep currentSentence the same and try again
 				if newcopy in novels_set:
@@ -84,6 +85,7 @@ def printNovel():
 			print currentSentence
 
 
+		#repeat above for the rest of the sentence types
 		if currentSentence == 1:
 
 			nextSentence = selectSentence(interactions)
@@ -92,8 +94,8 @@ def printNovel():
 			id_set = set(ids)
 			novels_set = set(novel)
 
-			if nextSentence in id_set:
-				print "found a duplicate.  checking..."
+			if newid in id_set:
+				print "Found a duplicate.  Checking..."
 				if newcopy in novels_set:
 					print "Found an interaction match! Trying again."
 					currentSentence = 1			
@@ -116,8 +118,8 @@ def printNovel():
 			id_set = set(ids)
 			novels_set = set(novel)
 
-			if nextSentence in id_set:
-				print "found a duplicate.  checking..."
+			if newid in id_set:
+				print "Found a duplicate.  Checking..."
 				if newcopy in novels_set:
 					print "Found a 'more action' match! Trying again."
 					currentSentence = 2			
@@ -140,8 +142,8 @@ def printNovel():
 			id_set = set(ids)
 			novels_set = set(novel)
 
-			if nextSentence in id_set:
-				print "Found a duplicate.  checking..."
+			if newid in id_set:
+				print "Found a duplicate.  Checking..."
 				if newcopy in novels_set:
 					print "Found an afterthoughts match! Trying again."
 					currentSentence = 3		
@@ -173,7 +175,7 @@ def printNovel():
 	file.close()
 
 	print "Novel is generated at " + filename + ", count of " + str(count) + " characters"
-	print ids
+	# print ids
 
 
 
