@@ -5,12 +5,16 @@ from random import randrange
 import datetime
 import os
 
-#create optional argument for a city-specific novel
-if len(argv) > 1:
-	script, city = argv
-
-else:
+#create optional argument for a city-specific and directionally-specific (ie, w4m/m4w/w4w/m4m) novel
+if len(argv) > 2:
+	script, direction, city = argv
+elif len(argv) > 1:
+	script, direction = argv
 	city = "all"
+else:
+	direction = "all"
+	city = "all"
+
 
 #blank lists for types of sentences
 intros = []
@@ -46,7 +50,7 @@ def printNovel():
 	count = len(intros[firstSentence][0])
 
 	#while the total character count is less than 5000...
-	while count < 5000:
+	while count < 1000:
 		#print ids
 
 		#picking new sentence type based on last sentence type
@@ -184,24 +188,29 @@ conn = sqlite3.connect('novelsDB.db')
 c = conn.cursor()
 conn.text_factory = str
 
-if city == "all":
+if city == "all" and direction == "all":
 
-	#select from all the db entries, doesn't matter what city
+	#select from all the db entries, doesn't matter what city or what direction
 	c.execute('SELECT * from sentences')
 	results = c.fetchall()
 
-else:
+elif city == "all" and direction != "all":
+	#select from all entries where the direction matches, regardless of city
+	c.execute('SELECT * from sentences WHERE direction=:theDirection',
+		{"theDirection": direction})
+	results = c.fetchall()
 
-	#select all db entries where the city matches the city argument
-	c.execute('SELECT * from sentences where city=:theCity', 
-		{"theCity": city})
+else:
+	#select all db entries where the city matches the city argument AND the direction matches the direction argument
+	c.execute('SELECT * from sentences WHERE city=:theCity AND direction=:theDirection',
+		{"theCity":city, 'theDirection':direction})
 	results = c.fetchall()
 
 #adding cities to lists by category of sentence
 for result in results:
 
-	category = result[3]
-	sentence = result[2]
+	category = result[4]
+	sentence = result[3]
 	id = result[0]
 
 	if category == "intro":

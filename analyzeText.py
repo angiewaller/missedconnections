@@ -17,11 +17,12 @@ def splitSentences():
 		#pulling info about the post from the database
 		id = item[0]
 		city = item[1]
+		direction = item[3]
 		copy = item[5]
 
 		#replacing unusable characters and splitting the copy into sentences
 		copy = copy.strip()
-		copy = copy.replace('\n', '').replace('[...]', '').replace("'", "\'").replace('/', '').replace('<3', '').replace(':)', '')
+		copy = copy.replace('\n', '').replace(' [...]', '').replace("'", "\'").replace('/', '').replace('<3', '').replace(':)', '')
 		sentences = copy.split('.')
 
 		for sentence in sentences:
@@ -35,7 +36,7 @@ def splitSentences():
 				if len(results) > 0:
 					for result in results:
 						#add new sentences to a database for the type of sentence, keeping city and category attached
-						addEntry(id, sentence, city, result)
+						addEntry(id, direction, sentence, city, result)
 
 	conn.close()
 
@@ -80,7 +81,7 @@ def sortPhrases(sentence):
 
 
 #adding entries to the database
-def addEntry(id, sentence, city, category):
+def addEntry(id, direction, sentence, city, category):
 
 	db = sqlite3.connect('novelsDB.db')
 	cur = db.cursor()
@@ -93,8 +94,8 @@ def addEntry(id, sentence, city, category):
 
 	if id > lastID:
 
-		toAdd = (id, city, sentence, category)
-		cur.execute('INSERT INTO sentences VALUES (?, ?, ?, ?)', toAdd)
+		toAdd = (id, direction, city, sentence, category)
+		cur.execute('INSERT INTO sentences VALUES (?, ?, ?, ?, ?)', toAdd)
 
 		db.commit()
 
