@@ -2,7 +2,7 @@ import nltk
 import sqlite3
 import re
 
-categories = ["intro", "description", "interaction", "more", "afterthought"]
+categories = ["stop", "intro", "description", "interaction", "more", "afterthought"]
 
 def splitSentences():
 
@@ -22,7 +22,7 @@ def splitSentences():
 
 		#replacing unusable characters and splitting the copy into sentences
 		copy = copy.strip()
-		copy = copy.replace('\n', '').replace(' [...]', '').replace("'", "\'").replace('/', '').replace('<3', '').replace(':)', '')
+		copy = copy.replace('\n', '').replace(' [...]', '').replace("'", "\'").replace('/', '').replace('<3', '').replace(':)', '').replace('!', '.').replace(';', '.').replace(',', '.').replace('-', '.')
 		sentences = copy.split('.')
 
 		for sentence in sentences:
@@ -59,21 +59,32 @@ def sortPhrases(sentence):
 		phrases = file.read()
 		phrases = phrases.split('\n')
 
-		for phrase in phrases:
-
-			if category == "intro":
-
-				key = re.match(phrase, sentence)
-				if key != None:
-					tags.append(category)
-					break
-
-			else:
-
+		#tagging all the stuff that belongs in the stop list
+		if category == "stop":
+			for phrase in phrases:
 				key = re.search(phrase, sentence)
 				if key != None:
 					tags.append(category)
-					break
+
+		else:
+
+			tag_set = set(tags)
+
+			#sorting fragments by tags, filtering the ones that have already been tagged with "stop"
+			for phrase in phrases:
+				if category == "intro":
+
+					key = re.match(phrase, sentence)
+					if key != None and "stop" not in tag_set:
+						tags.append(category)
+						break
+
+				else:
+
+					key = re.search(phrase, sentence)
+					if key != None and "stop" not in tag_set:
+						tags.append(category)
+						break
 
 		file.close()
 
@@ -92,7 +103,7 @@ def addEntry(id, direction, sentence, city, category):
 	lastID = result[0]
 	# print lastID
 
-	if id > lastID:
+	if id > lastID and category != "stop":
 
 		toAdd = (id, direction, city, sentence, category)
 		cur.execute('INSERT INTO sentences VALUES (?, ?, ?, ?, ?)', toAdd)

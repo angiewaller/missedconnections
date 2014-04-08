@@ -41,7 +41,7 @@ def printNovel():
 	if not os.path.exists(dir):
 		os.makedirs(dir)
 
-	#pick a first sentence at random from the list, append it to the novel lis
+	#pick a first sentence at random from the list, append it to the novel list
 	firstSentence = selectSentence(intros)
 	novel.append(intros[firstSentence][0])
 	print intros[firstSentence][0]
@@ -50,8 +50,7 @@ def printNovel():
 	count = len(intros[firstSentence][0])
 
 	#while the total character count is less than 5000...
-	while count < 1000:
-		#print ids
+	while count < 5000:
 
 		#picking new sentence type based on last sentence type
 		#intro sentence is only used at the beginning.  the other types cycle through.
@@ -86,10 +85,10 @@ def printNovel():
 				novel.append(newcopy)
 				ids.append(newid)
 				currentSentence = 1
-			print currentSentence
-
+			# print currentSentence
 
 		#repeat above for the rest of the sentence types
+		#interactions
 		if currentSentence == 1:
 
 			nextSentence = selectSentence(interactions)
@@ -112,9 +111,9 @@ def printNovel():
 				novel.append(newcopy)
 				ids.append(newid)
 				currentSentence = 2
-			print currentSentence
+			# print currentSentence
 
-
+		#more action
 		if currentSentence == 2:
 			nextSentence = selectSentence(more)
 			newcopy = more[nextSentence][0]
@@ -136,9 +135,9 @@ def printNovel():
 				novel.append(newcopy)
 				ids.append(newid)
 				currentSentence = 3
-			print currentSentence
+			# print currentSentence
 
-
+		#afterthoughts
 		if currentSentence == 3:
 			nextSentence = selectSentence(afterthoughts)
 			newcopy = afterthoughts[nextSentence][0]
@@ -160,7 +159,7 @@ def printNovel():
 				novel.append(newcopy)
 				ids.append(newid)
 				currentSentence = 1
-			print currentSentence
+			# print currentSentence
 
 		#adding the length of the last sentence to the total character count, determines whether the loop runs again
 		count += len(novel[-1])
@@ -172,8 +171,12 @@ def printNovel():
 	#writing to a text file
 	file = open(filename, "w")
 
-	#looping through novel list and writing each sentence to the file
+	#looping through novel list, cleaning up the text a little, and writing each sentence to the file
 	for sentence in novel:
+		sentence = sentence.strip()
+		sentence = sentence.capitalize()
+		sentence = sentence.replace("i'd", "I'd").replace("i'm", "I'm").replace(" i ", " I ")
+		# print sentence
 		file.write(sentence + ". ")
 
 	file.close()
