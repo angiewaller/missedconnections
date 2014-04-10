@@ -23,9 +23,14 @@ interactions = []
 more = []
 afterthoughts = []
 
-#initialize blank list, this is where we are storing the novel
+#initialize blank list, this is where we are storing the novel and the IDs of all the sentences in it
 novel = []
 ids = []
+
+fromWords = []
+toWords = []
+fromFile = "from.txt"
+toFile = "w4m.txt"
 
 def selectSentence(type):
 
@@ -50,7 +55,7 @@ def printNovel():
 	count = len(intros[firstSentence][0])
 
 	#while the total character count is less than 5000...
-	while count < 5000:
+	while count < 1000:
 
 		#picking new sentence type based on last sentence type
 		#intro sentence is only used at the beginning.  the other types cycle through.
@@ -176,6 +181,8 @@ def printNovel():
 		sentence = sentence.strip()
 		sentence = sentence.capitalize()
 		sentence = sentence.replace("i'd", "I'd").replace("i'm", "I'm").replace(" i ", " I ")
+		for i in range(0,len(fromWords)):
+			sentence = sentence.replace(fromWords[i], toWords[i])
 		# print sentence
 		file.write(sentence + ". ")
 
@@ -184,6 +191,16 @@ def printNovel():
 	print "Novel is generated at " + filename + ", count of " + str(count) + " characters"
 	# print ids
 
+def loadFromFile(filename, destination):
+
+	file = open("dictionaries/" + filename, "r")
+	phrases = file.read()
+	phrases = phrases.split('\n')
+
+	for phrase in phrases:
+		destination.append(phrase)
+
+	# print destination
 
 
 #connect to the database
@@ -226,6 +243,9 @@ for result in results:
 		afterthoughts.append([sentence, id])
 	elif category == "more":
 		more.append([sentence, id])
+
+loadFromFile(fromFile, fromWords)
+loadFromFile(toFile, toWords)
 
 #call printNovel to print result
 printNovel()

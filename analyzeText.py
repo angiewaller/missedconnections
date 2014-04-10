@@ -34,9 +34,9 @@ def splitSentences():
 				results = sortPhrases(sentence)
 
 				if len(results) > 0:
-					for result in results:
+					for sentType in results:
 						#add new sentences to a database for the type of sentence, keeping city and category attached
-						addEntry(id, direction, sentence, city, result)
+						addEntry(id, direction, sentence, city, sentType)
 
 	conn.close()
 
