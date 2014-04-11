@@ -30,7 +30,11 @@ To stop the code, press Ctrl+c in the terminal window and the code will terminat
 
 ### To analyze collected text:  
 
-Run the following:
+Create a new database of sorted sentences by running the following ONCE:
+
+	python novelsDB.py
+
+Then, run the following as often as you wish:
 
 	python analyzeText.py
 
