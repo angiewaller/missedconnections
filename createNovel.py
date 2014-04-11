@@ -179,10 +179,12 @@ def printNovel():
 	#looping through novel list, cleaning up the text a little, and writing each sentence to the file
 	for sentence in novel:
 		sentence = sentence.strip()
-		sentence = sentence.capitalize()
-		sentence = sentence.replace("i'd", "I'd").replace("i'm", "I'm").replace(" i ", " I ")
+		sentence = sentence.lower()
 		for i in range(0,len(fromWords)):
 			sentence = sentence.replace(fromWords[i], toWords[i])
+		sentence = sentence.capitalize()
+		sentence = sentence.replace("i'd", "I'd").replace("i'm", "I'm").replace(" i ", " I ")
+
 		# print sentence
 		file.write(sentence + ". ")
 
