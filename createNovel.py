@@ -55,7 +55,7 @@ def printNovel():
 	count = len(intros[firstSentence][0])
 
 	#while the total character count is less than 5000...
-	while count < 1000:
+	while count < 5000:
 
 		#picking new sentence type based on last sentence type
 		#intro sentence is only used at the beginning.  the other types cycle through.
