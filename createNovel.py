@@ -1,19 +1,31 @@
-from sys import argv
 import re
 import sqlite3
 from random import randrange
 import datetime
 import os
 
-#create optional argument for a city-specific and directionally-specific (ie, w4m/m4w/w4w/m4m) novel
-if len(argv) > 2:
-	script, direction, city = argv
-elif len(argv) > 1:
-	script, direction = argv
+#create optional arguments for a city-specific, directionally-specific (ie, w4m/m4w/w4w/m4m), or thematic novel
+#set up optional city variable
+city_input = raw_input("Please enter the city you want.  If none, hit return: ")
+
+if city_input != "":
+	city = city_input
+else:
 	city = "all"
+print city
+
+#set up optional orientation variable
+direction_input = raw_input("Please enter an orientation you want.  If none, hit return: ")
+
+if direction_input != "":
+	direction = direction_input
 else:
 	direction = "all"
-	city = "all"
+print direction
+
+#setting up optional theme for novel
+theme = []
+theme_file = raw_input("Please enter the name of the theme file.  If none, hit return: ")
 
 
 #blank lists for types of sentences
@@ -55,7 +67,7 @@ def printNovel():
 	count = len(intros[firstSentence][0])
 
 	#while the total character count is less than 5000...
-	while count < 5000:
+	while count < 1000:
 
 		#picking new sentence type based on last sentence type
 		#intro sentence is only used at the beginning.  the other types cycle through.
@@ -89,7 +101,6 @@ def printNovel():
 			nextSentence = selectSentence(interactions)
 			newcopy = interactions[nextSentence][0]
 			newid = interactions[nextSentence][1]
-			id_set = set(ids)
 			novels_set = set(novel)
 
 			if newcopy in novels_set:
@@ -106,7 +117,6 @@ def printNovel():
 			nextSentence = selectSentence(more)
 			newcopy = more[nextSentence][0]
 			newid = more[nextSentence][1]
-			id_set = set(ids)
 			novels_set = set(novel)
 
 			if newcopy in novels_set:
@@ -124,7 +134,6 @@ def printNovel():
 			nextSentence = selectSentence(afterthoughts)
 			newcopy = afterthoughts[nextSentence][0]
 			newid = afterthoughts[nextSentence][1]
-			id_set = set(ids)
 			novels_set = set(novel)
 
 			if newcopy in novels_set:
@@ -173,8 +182,15 @@ def loadFromFile(filename, destination):
 	for phrase in phrases:
 		destination.append(phrase)
 
-	# print destination
+	#print destination
 
+
+#load theme file
+if theme_file != "":
+	loadFromFile(theme_file, theme)
+else:
+	theme.append(' ')
+print len(theme)
 
 #connect to the database
 conn = sqlite3.connect('novelsDB.db')
@@ -193,6 +209,12 @@ elif city == "all" and direction != "all":
 		{"theDirection": direction})
 	results = c.fetchall()
 
+elif city != "all" and direction == "all":
+	#select from all entries where the direction matches, regardless of city
+	c.execute('SELECT * from sentences WHERE city=:theCity',
+		{"theCity": city})
+	results = c.fetchall()
+
 else:
 	#select all db entries where the city matches the city argument AND the direction matches the direction argument
 	c.execute('SELECT * from sentences WHERE city=:theCity AND direction=:theDirection',
@@ -206,17 +228,34 @@ for result in results:
 	sentence = result[3]
 	id = result[0]
 
-	if category == "intro":
-		intros.append([sentence, id])
-	elif category == "description":
-		descriptions.append([sentence, id])
-	elif category == "interaction":
-		interactions.append([sentence, id])
-	elif category == "afterthought":
-		afterthoughts.append([sentence, id])
-	elif category == "more":
-		more.append([sentence, id])
+	if len(theme) > 0:
+		for word in theme:
+			if word in sentence:
 
+				if category == "intro":
+					intros.append([sentence, id])
+				elif category == "description":
+					descriptions.append([sentence, id])
+				elif category == "interaction":
+					interactions.append([sentence, id])
+				elif category == "afterthought":
+					afterthoughts.append([sentence, id])
+				elif category == "more":
+					more.append([sentence, id])
+
+	else:
+		if category == "intro":
+			intros.append([sentence, id])
+		elif category == "description":
+			descriptions.append([sentence, id])
+		elif category == "interaction":
+			interactions.append([sentence, id])
+		elif category == "afterthought":
+			afterthoughts.append([sentence, id])
+		elif category == "more":
+			more.append([sentence, id])
+
+#create stop lists
 loadFromFile(fromFile, fromWords)
 loadFromFile(toFile, toWords)
 
