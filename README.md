@@ -47,13 +47,7 @@ Run the following:
 
 	python createNovel.py
 
-optionally with one or two arguments as follows:
-
-	python createNovel.py <orientation> <city>
-
-	python createNovel.py <orientation>
-
-The first will create an orientation (w4m/m4m/m4w/w4w) and city specific novel; the second will only limit the orientation.  If run without any arguments, the novel will pull from all the sentences, regardless of city and orientation.  
+The script will prompt you for a city, an orientation (w4m/m4m/m4w/w4w), and a file name for thematic words.  Please enter these in EXACTLY how they appear on Craigslist or on your computer.  These entries will limit the sentences chosen from for the novel.  If you don't want to specify anything, just hit return at the prompt.
 
 The novel will print to a file in a "novels" directory.  The file name will print to terminal when the novel is completed.  
 
