@@ -26,19 +26,23 @@ print direction
 #setting up optional theme for novel
 theme = []
 theme_file = raw_input("Please enter the name of the theme file.  If none, hit return: ")
+print len(theme)
 
+#!!! CHANGE ORDER OF SENTENCE TYPES HERE !!!
+content = ["intro", "description", "interaction", "more", "afterthought"]
+content_lists = []
 
 #blank lists for types of sentences
-intros = []
-descriptions = []
-interactions = []
-more = []
-afterthoughts = []
+
+for c in content:
+	c = []
+	content_lists.append(c)
 
 #initialize blank list, this is where we are storing the novel and the IDs of all the sentences in it
 novel = []
 ids = []
 
+#setting up lists for the pronoun exchanges; change file here
 fromWords = []
 toWords = []
 fromFile = "from.txt"
@@ -58,100 +62,67 @@ def printNovel():
 	if not os.path.exists(dir):
 		os.makedirs(dir)
 
-	#pick a first sentence at random from the list, append it to the novel list
-	firstSentence = selectSentence(intros)
-	novel.append(intros[firstSentence][0])
-	print intros[firstSentence][0]
-	ids.append(intros[firstSentence][1])
+	#pick a intros sentence at random from the list, append it to the novel list
+	introsSentence = selectSentence(content[0])
+	novel.append(content_lists[0][introsSentence][0])
+	# print content_lists[0][introsSentence][0]
+	ids.append(content_lists[0][introsSentence][1])
+
 	currentSentence = 0
-	count = len(intros[firstSentence][0])
+	count = len(content_lists[0][introsSentence][0])
 
 	#while the total character count is less than 5000...
 	while count < 1000:
 
+		total = len(content)-1
+
 		#picking new sentence type based on last sentence type
-		#intro sentence is only used at the beginning.  the other types cycle through.
+		#first type of sentence is only used at the beginning.  the other types cycle through.
 
-		if currentSentence == 0:
+		if currentSentence == total:
+			nextSentence = selectSentence(content[total])
+			newcopy = content_lists[total][nextSentence][0]
+			newid = content_lists[total][nextSentence][1]
 
-			nextSentence = selectSentence(descriptions)
-			newcopy = descriptions[nextSentence][0]
-			newid = descriptions[nextSentence][1]
-
-			#create a set out of all the sentences in the lists so far
-			novels_set = set(novel)
-
-			#checking for duplicates
-			#check against the sentences in the novel.  if found, keep currentSentence the same and try again
-			if newcopy in novels_set:
-				print "Found a 'description' match! Trying again."
-				currentSentence = 0	
-
-			#otherwise, OK to add to novel
-			else:
-				novel.append(newcopy)
-				ids.append(newid)
-				currentSentence = 1
-			# print currentSentence
-
-		#repeat above for the rest of the sentence types
-		#interactions
-		if currentSentence == 1:
-
-			nextSentence = selectSentence(interactions)
-			newcopy = interactions[nextSentence][0]
-			newid = interactions[nextSentence][1]
 			novels_set = set(novel)
 
 			if newcopy in novels_set:
-				print "Found an 'interaction' match! Trying again."
-				currentSentence = 1
-
-			else:
-				novel.append(newcopy)
-				ids.append(newid)
-				currentSentence = 2
-
-		#more action
-		if currentSentence == 2:
-			nextSentence = selectSentence(more)
-			newcopy = more[nextSentence][0]
-			newid = more[nextSentence][1]
-			novels_set = set(novel)
-
-			if newcopy in novels_set:
-				print "Found a 'more action' match! Trying again."
-				currentSentence = 2			
-
-			else:
-				novel.append(newcopy)
-				ids.append(newid)
-				currentSentence = 3
-			# print currentSentence
-
-		#afterthoughts
-		if currentSentence == 3:
-			nextSentence = selectSentence(afterthoughts)
-			newcopy = afterthoughts[nextSentence][0]
-			newid = afterthoughts[nextSentence][1]
-			novels_set = set(novel)
-
-			if newcopy in novels_set:
-				print "Found an 'afterthoughts' match! Trying again."
-				currentSentence = 3		
+				print "Found a " + content[i] + "match!  Trying again."
+				currentSentence = i
 
 			else:
 				novel.append(newcopy)
 				ids.append(newid)
 				currentSentence = 1
-			# print currentSentence
+				print newcopy
 
-		#adding the length of the last sentence to the total character count, determines whether the loop runs again
-		count += len(novel[-1])
+				#adding the length of the last sentence to the total character count, determines whether the loop runs again
+				count += len(novel[-1])
 
-	#put a final afterthought sentence to end the novel
-	nextSentence = selectSentence(afterthoughts)
-	novel.append(afterthoughts[nextSentence][0])
+		else:
+			for i in range(0, total):
+					if currentSentence == i:
+						# print currentSentence
+						nextSentence = selectSentence(content[i+1])
+						newcopy = content_lists[i+1][nextSentence][0]
+						newid = content_lists[i+1][nextSentence][1]
+
+						novels_set = set(novel)
+
+						if newcopy in novels_set:
+							print "Found a " + content[i] + "match!  Trying again."
+							currentSentence = i
+
+						else:
+							novel.append(newcopy)
+							ids.append(newid)
+							currentSentence = i+1
+							print newcopy
+							count += len(novel[-1])
+
+	#put a final sentence to end the novel
+	nextSentence = selectSentence(content_lists[len(content)-1])
+	novel.append(content_lists[len(content)-1][nextSentence][0])
 
 	#writing to a text file
 	file = open(filename, "w")
@@ -163,15 +134,15 @@ def printNovel():
 		for i in range(0,len(fromWords)):
 			sentence = sentence.replace(fromWords[i], toWords[i])
 		sentence = sentence.capitalize()
-		sentence = sentence.replace("i'd", "I'd").replace("i'm", "I'm").replace(" i ", " I ")
+		sentence = sentence.replace("i'd", "I'd").replace("i'm", "I'm").replace(" i ", " I ").replace("i'll", "I'll")
 
-		# print sentence
+		#print sentence
 		file.write(sentence + ". ")
 
 	file.close()
 
 	print "Novel is generated at " + filename + ", count of " + str(count) + " characters"
-	# print ids
+
 
 def loadFromFile(filename, destination):
 
@@ -190,7 +161,7 @@ if theme_file != "":
 	loadFromFile(theme_file, theme)
 else:
 	theme.append(' ')
-print len(theme)
+# print len(theme)
 
 #connect to the database
 conn = sqlite3.connect('novelsDB.db')
@@ -228,34 +199,23 @@ for result in results:
 	sentence = result[3]
 	id = result[0]
 
-	if len(theme) > 0:
+	if len(theme) > 1:
 		for word in theme:
 			if word in sentence:
 
-				if category == "intro":
-					intros.append([sentence, id])
-				elif category == "description":
-					descriptions.append([sentence, id])
-				elif category == "interaction":
-					interactions.append([sentence, id])
-				elif category == "afterthought":
-					afterthoughts.append([sentence, id])
-				elif category == "more":
-					more.append([sentence, id])
+				for c in content:
+					if category == c:
+						i = content.index(c)
+						content_lists[i].append([sentence, id])
 
 	else:
-		if category == "intro":
-			intros.append([sentence, id])
-		elif category == "description":
-			descriptions.append([sentence, id])
-		elif category == "interaction":
-			interactions.append([sentence, id])
-		elif category == "afterthought":
-			afterthoughts.append([sentence, id])
-		elif category == "more":
-			more.append([sentence, id])
+		for c in content:
+			if category == c:
+				i = content.index(c)
+				content_lists[i].append([sentence, id])
+		
 
-#create stop lists
+#create pronoun exchange lists
 loadFromFile(fromFile, fromWords)
 loadFromFile(toFile, toWords)
 
