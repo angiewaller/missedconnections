@@ -72,7 +72,7 @@ def printNovel():
 	count = len(content_lists[0][introsSentence][0])
 
 	#while the total character count is less than 5000...
-	while count < 1000:
+	while count < 5000:
 
 		total = len(content)-1
 
@@ -87,14 +87,14 @@ def printNovel():
 			novels_set = set(novel)
 
 			if newcopy in novels_set:
-				print "Found a " + content[i] + "match!  Trying again."
+				#print "Found a " + content[i] + " match!  Trying again."
 				currentSentence = i
 
 			else:
 				novel.append(newcopy)
 				ids.append(newid)
 				currentSentence = 1
-				print newcopy
+				#print newcopy
 
 				#adding the length of the last sentence to the total character count, determines whether the loop runs again
 				count += len(novel[-1])
@@ -110,14 +110,14 @@ def printNovel():
 						novels_set = set(novel)
 
 						if newcopy in novels_set:
-							print "Found a " + content[i] + "match!  Trying again."
+							#print "Found a " + content[i] + " match!  Trying again."
 							currentSentence = i
 
 						else:
 							novel.append(newcopy)
 							ids.append(newid)
 							currentSentence = i+1
-							print newcopy
+							#print newcopy
 							count += len(novel[-1])
 
 	#put a final sentence to end the novel
