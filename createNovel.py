@@ -29,6 +29,7 @@ theme_file = raw_input("Please enter the name of the theme file.  If none, hit r
 print len(theme)
 
 #!!! CHANGE ORDER OF SENTENCE TYPES HERE !!!
+# this is the array that the looping is referring to to tell what type of sentence you are on
 content = ["intro", "description", "interaction", "more", "afterthought"]
 content_lists = []
 
@@ -68,11 +69,13 @@ def printNovel():
 	# print content_lists[0][introsSentence][0]
 	ids.append(content_lists[0][introsSentence][1])
 
+	#if you want to start the novel with a type other than the first, change this to between 0-4
 	currentSentence = 0
 	count = len(content_lists[0][introsSentence][0])
 
 	#while the total character count is less than 5000...
-	while count < 5000:
+	# !!! if you want to change character count, do it here !!!
+	while count < 1000:
 
 		total = len(content)-1
 
@@ -93,6 +96,8 @@ def printNovel():
 			else:
 				novel.append(newcopy)
 				ids.append(newid)
+
+				# for more of the first type of sentence (intro), change this to 0
 				currentSentence = 1
 				#print newcopy
 
