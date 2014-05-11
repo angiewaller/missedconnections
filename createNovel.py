@@ -76,7 +76,7 @@ def printNovel():
 
 	#while the total character count is less than 5000...
 	# !!! CHANGE CHARACTER COUNT HERE !!!
-	while count < 1000:
+	while count < 5000:
 
 		total = len(content)-1
 
