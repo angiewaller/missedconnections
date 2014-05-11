@@ -33,8 +33,6 @@ print len(theme)
 content = ["intro", "description", "interaction", "more", "afterthought"]
 content_lists = []
 
-#blank lists for types of sentences
-
 for c in content:
 	c = []
 	content_lists.append(c)
@@ -43,7 +41,8 @@ for c in content:
 novel = []
 ids = []
 
-#setting up lists for the pronoun exchanges; change file here
+#setting up lists for the pronoun exchanges
+# !!! CHANGE PRONOUN FILE HERE !!!
 fromWords = []
 toWords = []
 fromFile = "from.txt"
