@@ -49,6 +49,7 @@ toWords = []
 fromFile = "from.txt"
 toFile = "w4m.txt"
 
+#function to pick a random sentence from a specified array
 def selectSentence(type):
 
 	seed = randrange(len(type))
@@ -64,7 +65,7 @@ def printNovel():
 		os.makedirs(dir)
 
 	#pick a intros sentence at random from the list, append it to the novel list
-	introsSentence = selectSentence(content[0])
+	introsSentence = selectSentence(content_lists[0])
 	novel.append(content_lists[0][introsSentence][0])
 	# print content_lists[0][introsSentence][0]
 	ids.append(content_lists[0][introsSentence][1])
@@ -74,7 +75,7 @@ def printNovel():
 	count = len(content_lists[0][introsSentence][0])
 
 	#while the total character count is less than 5000...
-	# !!! if you want to change character count, do it here !!!
+	# !!! CHANGE CHARACTER COUNT HERE !!!
 	while count < 1000:
 
 		total = len(content)-1
@@ -83,7 +84,7 @@ def printNovel():
 		#first type of sentence is only used at the beginning.  the other types cycle through.
 
 		if currentSentence == total:
-			nextSentence = selectSentence(content[total])
+			nextSentence = selectSentence(content_lists[total])
 			newcopy = content_lists[total][nextSentence][0]
 			newid = content_lists[total][nextSentence][1]
 
@@ -108,7 +109,7 @@ def printNovel():
 			for i in range(0, total):
 					if currentSentence == i:
 						# print currentSentence
-						nextSentence = selectSentence(content[i+1])
+						nextSentence = selectSentence(content_lists[i+1])
 						newcopy = content_lists[i+1][nextSentence][0]
 						newid = content_lists[i+1][nextSentence][1]
 
@@ -149,6 +150,7 @@ def printNovel():
 	print "Novel is generated at " + filename + ", count of " + str(count) + " characters"
 
 
+#function to load words from a text file into an array
 def loadFromFile(filename, destination):
 
 	file = open("dictionaries/" + filename, "r")
@@ -157,8 +159,6 @@ def loadFromFile(filename, destination):
 
 	for phrase in phrases:
 		destination.append(phrase)
-
-	#print destination
 
 
 #load theme file
@@ -204,21 +204,28 @@ for result in results:
 	sentence = result[3]
 	id = result[0]
 
+	#run this if the length of the theme array is greater than 1, meaning there is a theme file included
 	if len(theme) > 1:
 		for word in theme:
 			if word in sentence:
 
 				for c in content:
 					if category == c:
-						i = content.index(c)
-						content_lists[i].append([sentence, id])
+						indices = [i for i, n in enumerate(content) if n == c]
 
+						for i in range(0, len(indices)):
+							j = indices[i]
+							content_lists[j].append([sentence, id])
+
+	#otherwise, if there's no theme file:
 	else:
 		for c in content:
 			if category == c:
-				i = content.index(c)
-				content_lists[i].append([sentence, id])
-		
+				indices = [i for i, n in enumerate(content) if n == c]
+
+				for i in range(0, len(indices)):
+					j = indices[i]
+					content_lists[j].append([sentence, id])
 
 #create pronoun exchange lists
 loadFromFile(fromFile, fromWords)
