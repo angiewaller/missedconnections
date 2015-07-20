@@ -4,12 +4,34 @@ import re
 
 categories = ["stop", "intro", "description", "interaction", "more", "afterthought"]
 
+#check for new entries in collection database
+db = sqlite3.connect('novelsDB.db')
+cur = db.cursor()
+db.text_factory = str
+cur.execute('SELECT max(id) FROM sentences')
+result = cur.fetchone()
+lastID = result[0]
+db.close()
+
+db = sqlite3.connect('sampleDB.db')
+cur = db.cursor()
+db.text_factory = str
+cur.execute('SELECT max(id) FROM listings')
+result = cur.fetchone()
+new = result[0]
+db.close()
+
+print "Last ID analyzed: " + str(lastID)
+print str(new-lastID) + " new entries found!"
+
+
 def splitSentences():
 
 	conn = sqlite3.connect('sampleDB.db')
 	c = conn.cursor()
 	conn.text_factory = str
-	c.execute('SELECT * FROM listings')
+	c.execute('SELECT * FROM listings WHERE id > :prevID', 
+		{"prevID": lastID})
 	result = c.fetchall()
 
 	for item in result:
@@ -31,12 +53,17 @@ def splitSentences():
 
 			#if there is actually something there, run the sortPhrases function to add tags for the type of sentence this is
 			if len(sentence) > 0:
+				# print "ID: " + str(id) + ", sentence: " + sentence
 				results = sortPhrases(sentence)
 
 				if len(results) > 0:
 					for sentType in results:
 						#add new sentences to a database for the type of sentence, keeping city and category attached
 						addEntry(id, direction, sentence, city, sentType)
+
+		if id % 1000 == 0:
+			# lets you know how many entries have been done and how many to go
+			print str(id-lastID) + " entries analyzed. " + str(new-id) + " remaining."
 
 	conn.close()
 
@@ -46,7 +73,7 @@ def splitSentences():
 	cur.execute('SELECT * FROM sentences ORDER BY id DESC LIMIT 1')
 	lastEntry = cur.fetchall()[0]
 
-	print "Analysis complete.  Last sentence analyzed: " + str(lastEntry[0]) + ", " + lastEntry[2]
+	print "Analysis complete.  Last sentence analyzed: " + str(lastEntry[0]) + ", " + lastEntry[3]
 
 
 def sortPhrases(sentence):
@@ -98,12 +125,9 @@ def addEntry(id, direction, sentence, city, category):
 	cur = db.cursor()
 	db.text_factory = str
 
-	cur.execute('SELECT max(id) FROM sentences')
-	result = cur.fetchone()
-	lastID = result[0]
 	# print lastID
 
-	if id > lastID and category != "stop":
+	if category != "stop":
 
 		toAdd = (id, direction, city, sentence, category)
 		cur.execute('INSERT INTO sentences VALUES (?, ?, ?, ?, ?)', toAdd)
@@ -111,8 +135,6 @@ def addEntry(id, direction, sentence, city, category):
 		db.commit()
 
 	db.close()
-
-
 
 splitSentences()
 
